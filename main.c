@@ -19,6 +19,7 @@ void display_on_LCD(uint8_t number);
 void init_LEDs(void);
 void display_on_LEDs(uint8_t number);
 void delay();
+void init_switches(void);
 
 // MAIN FUNCTION -------------------------------------------------------------|
 
@@ -45,4 +46,13 @@ void init_LEDs(void){
 
 void display_on_LEDs(uint8_t number){
 	GPIOB -> ODR = number;
+}
+
+void init_switches(void){
+	//enables clock for port A//
+	RCC -> AHBENR |= RCC_AHBENR_GPIOAEN;
+	//sets pins 1 an 2 to input mode//
+	GPIOA -> MODER &= ~(GPIO_MODER_MODER1 | GPIO_MODER_MODER2);
+	//enable pull-up resistors//
+	GPIOA -> PUPDR |= (GPIO_PUPDR_PUPDR1_0 | GPIO_PUPDR_PUPDR2_0);
 }
