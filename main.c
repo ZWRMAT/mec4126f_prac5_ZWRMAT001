@@ -10,55 +10,66 @@
 #include <stdio.h>
 
 // GLOBAL VARIABLES ----------------------------------------------------------|
+uint8_t selection = 0;
 
 // FUNCTION DECLARATIONS -----------------------------------------------------|
 
-void main(void);                                                  //COMPULSORY
-void init_LCD(void);
-void display_on_LCD(uint8_t number); 
+void main(void);                                                   //COMPULSORY
 void init_LEDs(void);
-void display_on_LEDs(uint8_t number);
+void init_LCD(void);
 void delay();
+void display_on_LCD(uint8_t number);
+void display_on_LEDs(uint8_t number);
 void init_switches(void);
+void init_external_interrupts(void);
 
 // MAIN FUNCTION -------------------------------------------------------------|
 
 void main(void){
-		init_LCD();
+	init_LEDs();
+	init_LCD();
 	init_switches();
+	init_external_interrupts();
 
 	uint8_t count = 0;
-	display_on_LCD(count);
-	display_on_LEDs(count);
+
 	while(1){
-		if((GPIOA -> IDR & GPIO_IDR_1) == 0){
-			if(count < 255){
-				count++;
+		if((selection%2) != 0){
+			if((GPIOA -> IDR & GPIO_IDR_1) == 0){
+				if(count < 255){
+					count++;
+				}
+				else{
+					count = count;
+				}
+				lcd_command(CLEAR);
+				display_on_LCD(count);
+				display_on_LEDs(count);
+				delay(50000);
+				}
+			else if((GPIOA -> IDR & GPIO_IDR_2) == 0){
+				if(count <= 0){
+					count = count;
+				}
+				else{
+					count--;
+				}
+				lcd_command(CLEAR);
+				display_on_LCD(count);
+				display_on_LEDs(count);
+				delay(50000);
 			}
-			else{
-				count = count;
-			}
-			display_on_LCD(count);
-			display_on_LEDs(count);
-			delay(50000);
 		}
-		else if((GPIOA -> IDR & GPIO_IDR_2) == 0){
-			if(count <= 0){
-				count = count;
-			}
-			else{
-				count--;
-			}
-			display_on_LCD(count);
+		else{
+			count = 0;
+			lcd_command(CLEAR);
 			display_on_LEDs(count);
-			delay(50000);
 		}
 	}
 }
 
 // OTHER FUNCTIONS -----------------------------------------------------------|
 void display_on_LCD(uint8_t number){
-	lcd_command(CLEAR);
 	//creates array to store number in binary//
 	char num_string[3];
 	//converts number from int to char and stores it in array//
@@ -92,4 +103,10 @@ void init_external_interrupts(void){
 	EXTI -> IMR |= EXTI_IMR_MR3;
 	EXTI -> FTSR |= EXTI_FTSR_TR3;
 	NVIC_EnableIRQ(EXTI2_3_IRQn);
+}
+
+void EXTI2_3_IRQHandler(void){
+	EXTI -> PR &= EXTI_PR_PR3;
+	selection++;
+	delay(50000);
 }
