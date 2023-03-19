@@ -81,7 +81,15 @@ void init_switches(void){
 	//enables clock for port A//
 	RCC -> AHBENR |= RCC_AHBENR_GPIOAEN;
 	//sets pins 1 an 2 to input mode//
-	GPIOA -> MODER &= ~(GPIO_MODER_MODER1 | GPIO_MODER_MODER2);
+	GPIOA -> MODER &= ~(GPIO_MODER_MODER1 | GPIO_MODER_MODER2 | GPIO_MODER_MODER3);
 	//enable pull-up resistors//
-	GPIOA -> PUPDR |= (GPIO_PUPDR_PUPDR1_0 | GPIO_PUPDR_PUPDR2_0);
+	GPIOA -> PUPDR |= (GPIO_PUPDR_PUPDR1_0 | GPIO_PUPDR_PUPDR2_0 | GPIO_PUPDR_PUPDR3_0);
+}
+
+void init_external_interrupts(void){
+	RCC -> APB2ENR |= RCC_APB2ENR_SYSCFGCOMPEN;
+	SYSCFG -> EXTICR[2] |= SYSCFG_EXTICR1_EXTI3_PA;
+	EXTI -> IMR |= EXTI_IMR_MR3;
+	EXTI -> FTSR |= EXTI_FTSR_TR3;
+	NVIC_EnableIRQ(EXTI2_3_IRQn);
 }
