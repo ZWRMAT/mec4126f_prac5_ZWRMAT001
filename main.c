@@ -13,8 +13,9 @@
 
 // FUNCTION DECLARATIONS -----------------------------------------------------|
 
-void main(void);
-void display_on_LCD(uint8_t number);                                                   //COMPULSORY
+void main(void);                                                  //COMPULSORY
+void display_on_LCD(uint8_t number); 
+void init_LEDs(void);
 
 // MAIN FUNCTION -------------------------------------------------------------|
 
@@ -30,4 +31,11 @@ void display_on_LCD(uint8_t number){
 	//converts number from int to char and stores it in array//
 	sprintf(num_string, "%d", number);
 	lcd_putstring(num_string);
+}
+
+void init_LEDs(void){
+	//enable clock for port B//
+	RCC -> AHBENR |= RCC_AHBENR_GPIOBEN;
+	//sets mode of pins 0-7 to output//
+	GPIOB -> MODER |= 0b0101010101010101;
 }
