@@ -24,7 +24,36 @@ void init_switches(void);
 // MAIN FUNCTION -------------------------------------------------------------|
 
 void main(void){
+		init_LCD();
+	init_switches();
 
+	uint8_t count = 0;
+	display_on_LCD(count);
+	display_on_LEDs(count);
+	while(1){
+		if((GPIOA -> IDR & GPIO_IDR_1) == 0){
+			if(count < 255){
+				count++;
+			}
+			else{
+				count = count;
+			}
+			display_on_LCD(count);
+			display_on_LEDs(count);
+			delay(50000);
+		}
+		else if((GPIOA -> IDR & GPIO_IDR_2) == 0){
+			if(count <= 0){
+				count = count;
+			}
+			else{
+				count--;
+			}
+			display_on_LCD(count);
+			display_on_LEDs(count);
+			delay(50000);
+		}
+	}
 }
 
 // OTHER FUNCTIONS -----------------------------------------------------------|
